@@ -50,21 +50,28 @@
             color: #fff;
             resize: none;
             font-size: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .btn-group {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        button {
-            flex: 1;
+        .btn-full {
+            grid-column: span 2;
+        }
+        button, a.btn-download {
             padding: 12px;
             border: none;
             border-radius: 10px;
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
         }
         .btn-primary {
             background: #0284c7;
@@ -73,6 +80,17 @@
         .btn-secondary {
             background: #334155;
             color: #f8fafc;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+            display: none;
         }
         .result-box {
             text-align: center;
@@ -102,12 +120,14 @@
 
     <div class="btn-group">
         <button class="btn-secondary" onclick="generateIdea()">💡 Idea ယူမည်</button>
-        <button class="btn-primary" onclick="generateImage()">🚀 ပုံထုတ်မည်</button>
+        <button class="btn-danger" onclick="clearText()">🧹 Clear စာဖျက်မည်</button>
+        <button class="btn-primary btn-full" onclick="generateImage()">🚀 ပုံထုတ်မည်</button>
     </div>
 
     <div class="result-box">
         <div id="loading" class="loading">⏳ AI မှ ပုံဆွဲပေးနေပါသည်... ခဏစောင့်ပါ။</div>
         <img id="output-image" src="" alt="AI Generated Image">
+        <a id="download-btn" class="btn-download btn-success" target="_blank" download="ai-image.jpg">📥 Save / Download Image</a>
     </div>
 </div>
 
@@ -124,10 +144,15 @@
         document.getElementById('prompt').value = sampleIdeas[randomIndex];
     }
 
+    function clearText() {
+        document.getElementById('prompt').value = '';
+    }
+
     function generateImage() {
         const promptText = document.getElementById('prompt').value;
         const imgElement = document.getElementById('output-image');
         const loadingElement = document.getElementById('loading');
+        const downloadBtn = document.getElementById('download-btn');
 
         if (!promptText.trim()) {
             alert('ကျေးဇူးပြု၍ စာသား ရိုက်ထည့်ပါ!');
@@ -136,6 +161,7 @@
 
         loadingElement.style.display = 'block';
         imgElement.style.display = 'none';
+        downloadBtn.style.display = 'none';
 
         const encodedPrompt = encodeURIComponent(promptText);
         const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${Math.floor(Math.random() * 1000)}`;
@@ -144,10 +170,14 @@
         imgElement.onload = function() {
             loadingElement.style.display = 'none';
             imgElement.style.display = 'block';
+            
+            // Download Button Setup
+            downloadBtn.href = imageUrl;
+            downloadBtn.style.display = 'block';
         };
     }
 </script>
 
 </body>
-  </html>
-  
+            </html>
+            
