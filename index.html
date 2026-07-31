@@ -3,218 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Myanmar AI Story & Animation Studio</title>
+    <title>AI Myanmar Cartoon Creator - Step 2</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Padauk', system-ui, -apple-system, sans-serif;
-        }
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: #1e293b;
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
-        }
-        h2 {
-            text-align: center;
-            color: #38bdf8;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #94a3b8;
-        }
-        textarea {
-            width: 100%;
-            height: 90px;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            resize: none;
-            font-size: 15px;
-            margin-bottom: 12px;
-        }
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .btn-full {
-            grid-column: span 2;
-        }
-        button {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-primary {
-            background: #0284c7;
-            color: white;
-        }
-        .btn-secondary {
-            background: #334155;
-            color: #f8fafc;
-        }
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-        .story-card {
-            background: #0f172a;
-            padding: 16px;
-            border-radius: 12px;
-            margin-top: 15px;
-            border: 1px solid #334155;
-            display: none;
-        }
-        .myanmar-sub {
-            font-size: 16px;
-            color: #f1f5f9;
-            margin-bottom: 10px;
-            line-height: 1.6;
-            background: #1e293b;
-            padding: 10px;
-            border-left: 4px solid #38bdf8;
-            border-radius: 4px;
-        }
-        img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 10px;
-            border: 2px solid #38bdf8;
-        }
-        .loading {
-            display: none;
-            color: #38bdf8;
-            font-size: 14px;
-            text-align: center;
-            margin-top: 15px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap');
+        body { font-family: 'Padauk', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-<div class="container">
-    <h2>🎬 AI Story & Animation Studio</h2>
-    
-    <label for="prompt">ဇာတ်လမ်း အိုင်ဒီယာ ရိုက်ပါ (သို့မဟုတ် Idea ယူပါ):</label>
-    <textarea id="prompt" placeholder="ဥပမာ- ပုဂံမြို့ဟောင်းက ရွှေရောင်နဂါးလေးအကြောင်း..."></textarea>
+    <!-- Top Navigation Bar -->
+    <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-sky-500/30">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <span class="font-bold text-lg sm:text-xl bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">
+                        AI Cartoon Studio
+                    </span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button onclick="openApiModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-sky-400 px-3 py-1.5 rounded-lg border border-slate-700 text-sm transition">
+                        <i class="fa-solid fa-key"></i>
+                        <span class="hidden sm:inline">API Key ထည့်ရန်</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <div class="btn-group">
-        <button class="btn-secondary" onclick="generateIdea()">💡 Idea ယူမည်</button>
-        <button class="btn-danger" onclick="clearText()">🧹 Clear</button>
-        <button class="btn-primary btn-full" onclick="createStory()">🚀 ဇာတ်လမ်းနှင့် ပုံထုတ်မည်</button>
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Input Form & Settings -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+                <h2 class="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i> ဇာတ်လမ်း ဖန်တီးပါ
+                </h2>
+                
+                <!-- Prompt Input -->
+                <div class="space-y-2 mb-4">
+                    <label for="prompt" class="block text-sm font-medium text-slate-300">
+                        စိတ်ကူးထဲရှိသော ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ပါ:
+                    </label>
+                    <textarea id="prompt" rows="4" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition text-sm sm:text-base"
+                        placeholder="ဥပမာ- ပုဂံမြို့ဟောင်းတွင် နေထိုင်သော ရွှေရောင်နဂါးလေးနှင့် သူငယ်ချင်း ဝက်ဝံကလေးတို့၏ စွန့်စားခန်း..."></textarea>
+                </div>
+
+                <!-- Video Settings -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">ဇာတ်လမ်း ပုံစံ</label>
+                        <select id="style" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs sm:text-sm text-slate-200 focus:outline-none">
+                            <option value="3d Disney Pixar style cartoon animation">3D Pixar Style</option>
+                            <option value="2D anime studio ghibli style cartoon">2D Ghibli Style</option>
+                            <option value="cute 2D children storybook cartoon">Cute Storybook</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">အခန်း အရေအတွက်</label>
+                        <select id="scene-count" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs sm:text-sm text-slate-200 focus:outline-none">
+                            <option value="3">၃ အခန်း (စမ်းသပ်ရန်)</option>
+                            <option value="5" selected>၅ အခန်း (အတို)</option>
+                            <option value="8">၈ အခန်း (အလတ်)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="generate-btn" onclick="generateStoryScript()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 transition active:scale-95">
+                    <i class="fa-solid fa-brain"></i> Step 2: Gemini ဖြင့် ဇာတ်ညွှန်း ခွဲမည်
+                </button>
+            </div>
+
+            <!-- Story Workflow Steps Tracker -->
+            <div id="status-tracker" class="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 hidden">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">လုပ်ဆောင်မှု အခြေအနေ</h3>
+                <div class="space-y-3 text-sm">
+                    <div id="step-1-status" class="flex items-center gap-3 text-slate-500">
+                        <i id="step-1-icon" class="fa-solid fa-circle-notch fa-spin"></i>
+                        <span>၁။ Gemini API မှ မြန်မာဇာတ်ညွှန်းနှင့် Prompts ရယူခြင်း</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Output Scene Display Area -->
+        <div class="lg:col-span-7 space-y-6">
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm min-h-[450px]">
+                <h2 class="text-xl font-bold text-sky-400 mb-4 flex items-center justify-between">
+                    <span><i class="fa-solid fa-list-check"></i> Generated Storyboard & Scenes</span>
+                    <span id="scene-badge" class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full font-normal">0 Scenes</span>
+                </h2>
+
+                <div id="scenes-container" class="space-y-4">
+                    <!-- Default Placeholder -->
+                    <div id="placeholder-text" class="text-center py-16 text-slate-500 border border-dashed border-slate-700 rounded-xl">
+                        <i class="fa-solid fa-clapperboard text-4xl mb-3 text-slate-600"></i>
+                        <p> Gemini API ဖြင့် ဇာတ်ညွှန်း ခွဲထုတ်ပြီးပါက အခန်းလိုက် အသေးစိတ်များကို ဒီနေရာတွင် ပြသပေးပါမည်။</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- API Key Modal -->
+    <div id="api-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-sky-400 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-key"></i> Gemini API Key ထည့်သွင်းပါ
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">Google AI Studio မှ အခမဲ့ ရရှိသော Gemini API Key ကို ထည့်ပေးပါ။ Key ကို သင့် Browser ၏ LocalStorage ထဲတွင်သာ သိမ်းဆည်းမည်ဖြစ်ပါသည်။</p>
+            
+            <input id="api-key-input" type="password" placeholder="AIzaSy..." 
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="closeApiModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm font-semibold">ပိတ်မည်</button>
+                <button onclick="saveApiKey()" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold">သိမ်းဆည်းမည်</button>
+            </div>
+        </div>
     </div>
 
-    <div id="loading" class="loading">⏳ AI မှ မြန်မာဇာတ်လမ်းနှင့် ပုံများ ဖန်တီးနေပါသည်...</div>
-
-    <div id="story-display" class="story-card">
-        <div id="myanmar-text" class="myanmar-sub"></div>
-        <img id="output-image" src="" alt="AI Scene Image">
-        <button class="btn-success btn-full" style="margin-top:10px;" onclick="speakMyanmar()">🔊 မြန်မာလို အသံဖတ်ပြပါ</button>
-    </div>
-</div>
-
-<script>
-    const sampleIdeas = [
-        {
-            my: "ဟိုးရှေးရှေးတုန်းက ပုဂံပြည်ကြီးမှာ ကောင်းကင်ထက် ပျံသန်းနိုင်တဲ့ ရွှေရောင်နဂါးလေးတစ်ကောင် ရှိခဲ့ပါတယ်။",
-            en: "A glowing golden dragon flying gracefully over ancient Bagan temples in Myanmar, magical lighting, 8k render"
-        },
-        {
-            my: "အာကာသထဲမှာ ဝတ်စုံဝတ်ပြီး လကမ္ဘာပေါ်မှာ လမ်းလျှောက်နေတဲ့ ချစ်စရာ ဝက်ဝံကလေး။",
-            en: "A cute panda bear wearing a detailed space suit walking on the moon, cosmic stars background, cinematic photo"
-        },
-        {
-            my: "မိုးရွာနေတဲ့ ညဘက် နီယွန်မီးရောင်တွေလင်းနေတဲ့ အနာဂတ်မြို့တော်ကြီးထဲက ပြိုင်ကားတစ်စီး။",
-            en: "A futuristic sports car driving through a rainy neon city at night, wet street reflections, highly detailed"
-        }
-    ];
-
-    let currentMyanmarText = "";
-    let currentImagePrompt = "";
-
-    function generateIdea() {
-        const randomIndex = Math.floor(Math.random() * sampleIdeas.length);
-        const selected = sampleIdeas[randomIndex];
-        document.getElementById('prompt').value = selected.my;
-        currentImagePrompt = selected.en;
-    }
-
-    function clearText() {
-        document.getElementById('prompt').value = '';
-        document.getElementById('story-display').style.display = 'none';
-    }
-
-    function createStory() {
-        const inputText = document.getElementById('prompt').value;
-        const loadingElement = document.getElementById('loading');
-        const storyDisplay = document.getElementById('story-display');
-        const myanmarTextElem = document.getElementById('myanmar-text');
-        const imgElement = document.getElementById('output-image');
-
-        if (!inputText.trim()) {
-            alert('ကျေးဇူးပြု၍ စာသား ရိုက်ထည့်ပါ!');
-            return;
+    <!-- JavaScript Logic -->
+    <script>
+        // Modal Controls
+        function openApiModal() {
+            document.getElementById('api-modal').classList.remove('hidden');
+            const savedKey = localStorage.getItem('gemini_api_key') || '';
+            document.getElementById('api-key-input').value = savedKey;
         }
 
-        loadingElement.style.display = 'block';
-        storyDisplay.style.display = 'none';
-
-        currentMyanmarText = inputText;
-        myanmarTextElem.innerText = "📝 မြန်မာစာတန်းထိုး: " + currentMyanmarText;
-
-        // Image Prompt အင်္ဂလိပ်စာမရှိရင် Input စာသားအတိုင်း ပုံဆွဲရန်
-        const promptForAI = currentImagePrompt || inputText;
-        const encodedPrompt = encodeURIComponent(promptForAI);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${Math.floor(Math.random() * 1000)}`;
-
-        imgElement.src = imageUrl;
-        imgElement.onload = function() {
-            loadingElement.style.display = 'none';
-            storyDisplay.style.display = 'block';
-        };
-    }
-
-    // မြန်မာလို အသံထွက်ဖတ်ပေးသည့် စနစ် (Web Speech API)
-    function speakMyanmar() {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(currentMyanmarText);
-            utterance.lang = 'my-MM'; // Myanmar Language Code
-            utterance.rate = 0.9; // အသံနှုန်း လျှော့ထားသည်
-            window.speechSynthesis.speak(utterance);
-        } else {
-            alert('သင့်ဖုန်း Browser က အသံဖတ်ပေးသည့် စနစ်ကို မထောက်ပံ့ပါခင်ဗျာ။');
+        function closeApiModal() {
+            document.getElementById('api-modal').classList.add('hidden');
         }
+
+        function saveApiKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            if(key) {
+                localStorage.setItem('gemini_api_key', key);
+                alert('Gemini API Key ကို အောင်မြင်စွာ သိမ်းဆည်းလိုက်ပါပြီ!');
+                closeApiModal();
+            } else {
+                alert('API Key ထည့်ပေးပါခင်ဗျာ!');
+            }
+        }
+
+        // Gemini API Main Function
+        async function generateStoryScript() {
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if(!apiKey) {
+                alert('ကျေးဇူးပြု၍ အရင်ဆုံး "API Key ထည့်ရန်" ခလုတ်ကို နှိပ်ပြီး Gemini API Key ထည့်ပေးပါ!');
+                openApiModal();
+                return;
+            }
+
+            const prompt = document.getElementById('prompt').value.trim();
+            if(!prompt) {
+                alert('ကျေးဇူးပြု၍ ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ!');
+                return;
+            }
+
+            const artStyle = document.getElementById('style').value;
+            const sceneCount = document.getElementById('scene-count').value;
+
+            // UI Loading Updates
+            document.getElementById('status-tracker').classList.remove('hidden');
+            document.getElementById('generate-btn').disabled = true;
+            document.getElementById('generate-btn').classList.add('opacity-50');
+
+            const systemPrompt = `You are an expert AI Cartoon Director. 
+Create a ${sceneCount}-scene short cartoon story based on this topic: "${prompt}".
+The art style is: "${artStyle}".
+
+You MUST return strictly a JSON object with this exact structure:
+{
+  "title": "Story title in Myanmar",
+  "scenes": [
+    {
+      "scene_number": 1,
+      "myanmar_script": "အခန်း (၁) အတွက် မြန်မာလို ဇာတ်ကြောင်းပြောစာသား",
+      "image_prompt": "Detailed English image generation prompt describing character, setting, and action. Include '${artStyle}' in the prompt.",
+      "duration_seconds": 5
     }
-</script>
+  ]
+}
+Return ONLY valid JSON. Do NOT wrap in markdown markdown codeblocks.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt }] }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                let rawText = data.candidates[0].content.parts[0].text.trim();
+                // Clean JSON string if wrapped in markdown
+                if(rawText.startsWith('```json')) rawText = rawText.replace(/```json|```/g, '').trim();
+                if(rawText.startsWith('```')) rawText = rawText.replace(/```/g, '').trim();
+
+                const storyObj = JSON.parse(rawText);
+                renderScenes(storyObj);
+
+                // Update Status Icon to Success
+                document.getElementById('step-1-icon').className = 'fa-solid fa-circle-check text-emerald-400';
+                document.getElementById('step-1-status').classList.remove('text-slate-500');
+                document.getElementById('step-1-status').classList.add('text-emerald-400');
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+                console.error(error);
+            } finally {
+                document.getElementById('generate-btn').disabled = false;
+                document.getElementById('generate-btn').classList.remove('opacity-50');
+            }
+        }
+
+        // Display Generated Scenes in UI
+        function renderScenes(storyObj) {
+            const container = document.getElementById('scenes-container');
+            document.getElementById('scene-badge').innerText = `${storyObj.scenes.length} Scenes`;
+            container.innerHTML = '';
+
+            storyObj.scenes.forEach((scene) => {
+                const sceneHtml = `
+                    <div class="bg-slate-900 border border-slate-700/80 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-sky-400 bg-sky-950/80 border border-sky-800 px-2.5 py-1 rounded-md">
+                                Scene ${scene.scene_number} (${scene.duration_seconds}s)
+                            </span>
+                            <span class="text-xs text-slate-500"><i class="fa-regular fa-clock"></i> Auto-Generated</span>
+                        </div>
+                        
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">🇲🇲 မြန်မာ ဇာတ်ညွှန်း / စာတန်းထိုး:</label>
+                            <p class="text-sm font-medium text-slate-200 bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/50">
+                                ${scene.myanmar_script}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">🎨 AI Image Prompt (English):</label>
+                            <p class="text-xs font-mono text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800 break-words">
+                                ${scene.image_prompt}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += sceneHtml;
+            });
+        }
+    </script>
 
 </body>
-</html>
+    </html>
