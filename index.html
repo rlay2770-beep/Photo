@@ -1,216 +1,214 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Myanmar AI Cartoon Video Creator</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>3D Space Runner Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap');
-        body { font-family: 'Padauk', sans-serif; }
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
+        #game-canvas { width: 100vw; height: 100vh; display: block; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-slate-900 text-white relative">
 
-    <!-- Top Navigation Bar -->
-    <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-sky-500/30">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    </div>
-                    <span class="font-bold text-lg sm:text-xl bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">
-                        AI Cartoon Studio
-                    </span>
-                </div>
-                
-                <div class="flex items-center gap-2 bg-emerald-950/80 border border-emerald-800/80 px-3 py-1 rounded-full text-xs text-emerald-400">
-                    <i class="fa-solid fa-circle-check"></i> Ready to Create
-                </div>
-            </div>
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- UI Overlay (Scores) -->
+    <div class="absolute top-4 left-4 right-4 flex justify-between items-center pointer-events-none">
+        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl">
+            <span class="text-xs text-slate-400 block">SCORE</span>
+            <span id="score-text" class="text-2xl font-bold text-sky-400">0</span>
         </div>
-    </nav>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <!-- Left Column: Input Form & Settings -->
-        <div class="lg:col-span-5 space-y-6">
-            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
-                <h2 class="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-pen-nib"></i> ဇာတ်လမ်း ဖန်တီးပါ
-                </h2>
-                
-                <!-- Prompt Input -->
-                <div class="space-y-2 mb-4">
-                    <label for="prompt" class="block text-sm font-medium text-slate-300">
-                        စိတ်ကူးထဲရှိသော ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ပါ:
-                    </label>
-                    <textarea id="prompt" rows="4" 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition text-sm sm:text-base"
-                        placeholder="ဥပမာ- ပုဂံမြို့ဟောင်းတွင် နေထိုင်သော ရွှေရောင်နဂါးလေးနှင့် သူငယ်ချင်း ဝက်ဝံကလေးတို့၏ စွန့်စားခန်း..."></textarea>
-                </div>
-
-                <!-- Video Settings -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">ကာတွန်း စတိုင်လ်</label>
-                        <select id="style" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs sm:text-sm text-slate-200 focus:outline-none">
-                            <option value="3D Pixar style animated cartoon movie scene">3D Pixar Style</option>
-                            <option value="2D Anime Studio Ghibli style cartoon animation">2D Anime Style</option>
-                            <option value="Cute children storybook watercolor cartoon">Cute Storybook</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">အခန်း အရေအတွက်</label>
-                        <select id="scene-count" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs sm:text-sm text-slate-200 focus:outline-none">
-                            <option value="3">၃ အခန်း</option>
-                            <option value="4" selected>၄ အခန်း</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <button id="generate-btn" onclick="generateCartoonStory()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 transition active:scale-95">
-                    <i class="fa-solid fa-clapperboard"></i> 🎬 ဇာတ်လမ်းနှင့် ကာတွန်းပုံများ ထုတ်မည်
-                </button>
-            </div>
-
-            <!-- Status Tracker -->
-            <div id="status-tracker" class="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 hidden">
-                <div class="flex items-center gap-3 text-sky-400 font-bold text-sm">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>AI မှ ဇာတ်ညွှန်းနှင့် ကာတွန်းပုံများ ဖန်တီးပေးနေပါသည်...</span>
-                </div>
-            </div>
+        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl text-right">
+            <span class="text-xs text-slate-400 block">HIGH SCORE</span>
+            <span id="highscore-text" class="text-2xl font-bold text-amber-400">0</span>
         </div>
+    </div>
 
-        <!-- Right Column: Output Scene Display Area -->
-        <div class="lg:col-span-7 space-y-6">
-            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm min-h-[450px]">
-                <h2 class="text-xl font-bold text-sky-400 mb-4 flex items-center justify-between">
-                    <span><i class="fa-solid fa-film"></i> Storyboard & Subtitles</span>
-                    <span id="scene-badge" class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full font-normal">0 Scenes</span>
-                </h2>
+    <!-- Start / Game Over Screen -->
+    <div id="game-menu" class="absolute inset-0 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-10">
+        <h1 class="text-4xl sm:text-6xl font-extrabold bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent mb-2">
+            3D SPACE RUNNER
+        </h1>
+        <p class="text-slate-400 mb-8 max-w-sm text-sm sm:text-base">
+            အနီရောင် တားဆီးတုံးများကို ရှောင်ကင်း၍ ခရီးဆုံးအထိ အဝေးဆုံးသွားပါ။
+        </p>
 
-                <div id="scenes-container" class="space-y-6">
-                    <!-- Default Placeholder -->
-                    <div id="placeholder-text" class="text-center py-16 text-slate-500 border border-dashed border-slate-700 rounded-xl">
-                        <i class="fa-solid fa-clapperboard text-4xl mb-3 text-slate-600"></i>
-                        <p>ဇာတ်လမ်း ရိုက်ထည့်ပြီး ခလုတ်နှိပ်ပါက AI ကာတွန်းပုံများနှင့် မြန်မာအသံ ဖတ်ပြစနစ် ပေါ်လာပါမည်။</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <button id="start-btn" onclick="startGame()" class="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold py-3 px-8 rounded-2xl shadow-lg shadow-sky-500/30 text-lg transition active:scale-95">
+            🎮 PLAY GAME
+        </button>
+    </div>
 
-    </main>
+    <!-- Mobile Touch Controls Overlay -->
+    <div id="touch-controls" class="absolute inset-0 flex z-0 hidden">
+        <div class="w-1/2 h-full" onclick="movePlayer(-1)"></div>
+        <div class="w-1/2 h-full" onclick="movePlayer(1)"></div>
+    </div>
 
-    <!-- JavaScript Engine -->
+    <!-- Game Engine JS -->
     <script>
-        function generateCartoonStory() {
-            const topic = document.getElementById('prompt').value.trim();
-            if(!topic) {
-                alert('ကျေးဇူးပြု၍ ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ!');
-                return;
+        let scene, camera, renderer, player, obstacles = [], stars;
+        let score = 0, highScore = 0, isPlaying = false, speed = 0.6;
+        let targetX = 0;
+
+        function init3D() {
+            const canvas = document.getElementById('game-canvas');
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0f172a, 0.03);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 3, 7);
+            camera.lookAt(0, 1, 0);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+            dirLight.position.set(5, 10, 7);
+            scene.add(dirLight);
+
+            // Player Ship (3D Pyramid Block)
+            const playerGeo = new THREE.ConeGeometry(0.6, 1.2, 4);
+            const playerMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.2, metalness: 0.8 });
+            player = new THREE.Mesh(playerGeo, playerMat);
+            player.rotation.x = Math.PI / 2;
+            player.position.set(0, 0.5, 0);
+            scene.add(player);
+
+            // Track/Floor Grid
+            const gridHelper = new THREE.GridHelper(100, 40, 0x38bdf8, 0x1e293b);
+            gridHelper.position.z = -40;
+            scene.add(gridHelper);
+
+            // Background Stars
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 500;
+            const starCoords = new Float32Array(starCount * 3);
+            for(let i=0; i<starCount*3; i++) {
+                starCoords[i] = (Math.random() - 0.5) * 200;
             }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starCoords, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
+            stars = new THREE.Points(starGeo, starMat);
+            scene.add(stars);
 
-            const style = document.getElementById('style').value;
-            const sceneCount = parseInt(document.getElementById('scene-count').value);
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('keydown', handleKeyDown);
+        }
 
-            document.getElementById('status-tracker').classList.remove('hidden');
-            document.getElementById('generate-btn').disabled = true;
-            document.getElementById('generate-btn').classList.add('opacity-50');
+        function startGame() {
+            // Reset state
+            obstacles.forEach(o => scene.remove(o.mesh));
+            obstacles = [];
+            score = 0;
+            speed = 0.6;
+            targetX = 0;
+            player.position.x = 0;
+            isPlaying = true;
 
-            // Smart Myanmar Script Generator based on Topic
-            const scenes = [];
+            document.getElementById('score-text').innerText = '0';
+            document.getElementById('game-menu').classList.add('hidden');
+            document.getElementById('touch-controls').classList.remove('hidden');
+
+            animate();
+        }
+
+        function spawnObstacle() {
+            const size = Math.random() * 0.8 + 0.8;
+            const geo = new THREE.BoxGeometry(size, size, size);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.3 });
+            const mesh = new THREE.Mesh(geo, mat);
             
-            const scriptTemplates = [
-                `ဟိုးရှေးရှေးတုန်းက ${topic} အကြောင်း စိတ်လှုပ်ရှားဖွယ် ဇာတ်လမ်းလေး စတင်ခဲ့ပါတယ်။`,
-                `တစ်နေ့မှာတော့ မထင်မှတ်ထားတဲ့ အခက်အခဲတွေနဲ့ စွန့်စားခန်းများ စတင်ကြုံတွေ့ခဲ့ရပါတယ်။`,
-                `ဒါပေမဲ့ သူတို့အားလုံး စည်းလုံးညီညွတ်စွာနဲ့ အတူတကွ ရဲရဲဝံ့ဝံ့ ရင်ဆိုင်ကျော်ဖြတ်ခဲ့ကြပါတယ်။`,
-                `နောက်ဆုံးမှာတော့ သင်ခန်းစာကောင်းများစွာနဲ့အတူ ပျော်ရွှင်စရာ မင်္ဂလာရှိသော နိဂုံးလေး ဖြစ်သွားခဲ့ပါတယ်။`
-            ];
+            const lanes = [-2.5, 0, 2.5];
+            const posX = lanes[Math.floor(Math.random() * lanes.length)];
+            mesh.position.set(posX, size/2, -60);
+            
+            scene.add(mesh);
+            obstacles.push({ mesh, posX, size });
+        }
 
-            const promptKeywords = [
-                `establishing shot of ${topic}, character introduction, ${style}, masterpiece, 8k`,
-                `adventure scene of ${topic}, facing challenge, dramatic lighting, ${style}, highly detailed`,
-                `action scene of ${topic}, teamwork and courage, colorful magic effects, ${style}`,
-                `happy ending of ${topic}, smiling characters celebrating together, warm lighting, ${style}`
-            ];
+        let frameCount = 0;
+        function animate() {
+            if(!isPlaying) return;
+            requestAnimationFrame(animate);
 
-            for(let i = 0; i < sceneCount; i++) {
-                const encodedImgPrompt = encodeURIComponent(promptKeywords[i % promptKeywords.length]);
-                // High Quality Pollinations Engine
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodedImgPrompt}?width=800&height=450&seed=${Math.floor(Math.random() * 99999)}&nologo=true`;
-                
-                scenes.push({
-                    scene_number: i + 1,
-                    myanmar_script: scriptTemplates[i % scriptTemplates.length],
-                    image_url: imageUrl
-                });
+            // Smooth movement
+            player.position.x += (targetX - player.position.x) * 0.15;
+            player.rotation.z = -(targetX - player.position.x) * 0.5;
+
+            // Spawn obstacles
+            frameCount++;
+            if(frameCount % Math.max(20, Math.floor(40 - speed * 10)) === 0) {
+                spawnObstacle();
             }
 
-            renderScenes(scenes);
+            // Move obstacles
+            for(let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.mesh.position.z += speed;
+                obs.mesh.rotation.x += 0.02;
+                obs.mesh.rotation.y += 0.02;
 
-            document.getElementById('status-tracker').classList.add('hidden');
-            document.getElementById('generate-btn').disabled = false;
-            document.getElementById('generate-btn').classList.remove('opacity-50');
-        }
+                // Collision Check
+                const distZ = Math.abs(obs.mesh.position.z - player.position.z);
+                const distX = Math.abs(obs.mesh.position.x - player.position.x);
 
-        function renderScenes(scenes) {
-            const container = document.getElementById('scenes-container');
-            document.getElementById('scene-badge').innerText = `${scenes.length} Scenes`;
-            container.innerHTML = '';
+                if(distZ < 0.8 && distX < (obs.size / 2 + 0.4)) {
+                    gameOver();
+                    return;
+                }
 
-            scenes.forEach((scene) => {
-                const sceneHtml = `
-                    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-4 space-y-3 shadow-lg">
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                            <span class="text-xs font-bold text-sky-400 bg-sky-950/80 border border-sky-800 px-2.5 py-1 rounded-md">
-                                Scene ${scene.scene_number}
-                            </span>
-                            <button onclick="speakMyanmar('${escapeQuotes(scene.myanmar_script)}')" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                                <i class="fa-solid fa-volume-high"></i> မြန်မာလို ဖတ်ပြပါ
-                            </button>
-                        </div>
-                        
-                        <div class="relative aspect-video w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-                            <img src="${scene.image_url}" alt="AI Scene Image" class="w-full h-full object-cover" />
-                        </div>
-
-                        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
-                            <label class="text-xs text-sky-400 block mb-1 font-bold">🇲🇲 မြန်မာ ဇာတ်ကြောင်း / စာတန်းထိုး:</label>
-                            <p class="text-sm font-medium text-slate-100">
-                                ${scene.myanmar_script}
-                            </p>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += sceneHtml;
-            });
-        }
-
-        function escapeQuotes(str) {
-            return str.replace(/'/g, "\\'");
-        }
-
-        function speakMyanmar(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'my-MM';
-                utterance.rate = 0.85;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert('သင့်ဖုန်း Browser က အသံဖတ်ပေးသည့် စနစ်ကို မထောက်ပံ့ပါခင်ဗျာ။');
+                // Remove passed obstacles & increase score
+                if(obs.mesh.position.z > 5) {
+                    scene.remove(obs.mesh);
+                    obstacles.splice(i, 1);
+                    score += 10;
+                    document.getElementById('score-text').innerText = score;
+                    if(score > highScore) {
+                        highScore = score;
+                        document.getElementById('highscore-text').innerText = highScore;
+                    }
+                    speed += 0.005; // Speed up over time
+                }
             }
+
+            renderer.render(scene, camera);
         }
+
+        function gameOver() {
+            isPlaying = false;
+            document.getElementById('game-menu').classList.remove('hidden');
+            document.getElementById('touch-controls').classList.add('hidden');
+            document.querySelector('#game-menu h1').innerText = 'GAME OVER';
+            document.getElementById('start-btn').innerText = '🔄 RESTART GAME';
+        }
+
+        function movePlayer(dir) {
+            if(!isPlaying) return;
+            if(dir === -1 && targetX > -2.5) targetX -= 2.5;
+            if(dir === 1 && targetX < 2.5) targetX += 2.5;
+        }
+
+        function handleKeyDown(e) {
+            if(e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-1);
+            if(e.key === 'ArrowRight' || e.key === 'd') movePlayer(1);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.onload = init3D;
     </script>
-
 </body>
-    </html>
-    
+</html>
