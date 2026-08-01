@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Myanmar Cartoon Creator (No API Key Required)</title>
+    <title>Myanmar AI Cartoon Video Creator</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -24,12 +24,12 @@
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
                     <span class="font-bold text-lg sm:text-xl bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">
-                        AI Cartoon Studio (Free)
+                        AI Cartoon Studio
                     </span>
                 </div>
                 
                 <div class="flex items-center gap-2 bg-emerald-950/80 border border-emerald-800/80 px-3 py-1 rounded-full text-xs text-emerald-400">
-                    <i class="fa-solid fa-circle-check"></i> Free Mode (No API Key Needed)
+                    <i class="fa-solid fa-circle-check"></i> Ready to Create
                 </div>
             </div>
         </div>
@@ -60,9 +60,9 @@
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">ကာတွန်း စတိုင်လ်</label>
                         <select id="style" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs sm:text-sm text-slate-200 focus:outline-none">
-                            <option value="3d Pixar style cartoon, vibrant colors">3D Pixar Style</option>
-                            <option value="Studio Ghibli 2d anime storybook cartoon">2D Ghibli Anime</option>
-                            <option value="cute 2D children comic book illustration">Cute Storybook</option>
+                            <option value="3D Pixar style animated cartoon movie scene">3D Pixar Style</option>
+                            <option value="2D Anime Studio Ghibli style cartoon animation">2D Anime Style</option>
+                            <option value="Cute children storybook watercolor cartoon">Cute Storybook</option>
                         </select>
                     </div>
                     <div>
@@ -76,18 +76,15 @@
 
                 <!-- Action Button -->
                 <button id="generate-btn" onclick="generateCartoonStory()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 transition active:scale-95">
-                    <i class="fa-solid fa-clapperboard"></i> 🚀 ဇာတ်လမ်းနှင့် ပုံများ ဖန်တီးမည်
+                    <i class="fa-solid fa-clapperboard"></i> 🎬 ဇာတ်လမ်းနှင့် ကာတွန်းပုံများ ထုတ်မည်
                 </button>
             </div>
 
-            <!-- Story Workflow Steps Tracker -->
+            <!-- Status Tracker -->
             <div id="status-tracker" class="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 hidden">
-                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">လုပ်ဆောင်မှု အခြေအနေ</h3>
-                <div class="space-y-3 text-sm">
-                    <div id="status-text" class="flex items-center gap-3 text-sky-400 font-bold">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i>
-                        <span>AI မှ ဇာတ်ညွှန်းနှင့် ကာတွန်းပုံများ ဖန်တီးပေးနေပါသည်...</span>
-                    </div>
+                <div class="flex items-center gap-3 text-sky-400 font-bold text-sm">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>AI မှ ဇာတ်ညွှန်းနှင့် ကာတွန်းပုံများ ဖန်တီးပေးနေပါသည်...</span>
                 </div>
             </div>
         </div>
@@ -96,7 +93,7 @@
         <div class="lg:col-span-7 space-y-6">
             <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm min-h-[450px]">
                 <h2 class="text-xl font-bold text-sky-400 mb-4 flex items-center justify-between">
-                    <span><i class="fa-solid fa-film"></i> Cartoon Storyboards</span>
+                    <span><i class="fa-solid fa-film"></i> Storyboard & Subtitles</span>
                     <span id="scene-badge" class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full font-normal">0 Scenes</span>
                 </h2>
 
@@ -112,46 +109,47 @@
 
     </main>
 
-    <!-- JavaScript Logic (Free Mode) -->
+    <!-- JavaScript Engine -->
     <script>
-        async function generateCartoonStory() {
-            const prompt = document.getElementById('prompt').value.trim();
-            if(!prompt) {
+        function generateCartoonStory() {
+            const topic = document.getElementById('prompt').value.trim();
+            if(!topic) {
                 alert('ကျေးဇူးပြု၍ ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ!');
                 return;
             }
 
-            const artStyle = document.getElementById('style').value;
+            const style = document.getElementById('style').value;
             const sceneCount = parseInt(document.getElementById('scene-count').value);
 
-            // UI Loading Updates
             document.getElementById('status-tracker').classList.remove('hidden');
             document.getElementById('generate-btn').disabled = true;
             document.getElementById('generate-btn').classList.add('opacity-50');
 
-            // Generate Smart Scenes based on user input
+            // Smart Myanmar Script Generator based on Topic
             const scenes = [];
-            const baseEnglishPrompts = [
-                `First scene of ${prompt}, cute characters introducing, ${artStyle}, high detail, 8k render`,
-                `Second scene of ${prompt}, unexpected adventure begins, ${artStyle}, cinematic lighting`,
-                `Climax scene of ${prompt}, magical action scene, ${artStyle}, colorful masterpiece`,
-                `Happy ending scene of ${prompt}, characters celebrating together, ${artStyle}, warm atmosphere`
+            
+            const scriptTemplates = [
+                `ဟိုးရှေးရှေးတုန်းက ${topic} အကြောင်း စိတ်လှုပ်ရှားဖွယ် ဇာတ်လမ်းလေး စတင်ခဲ့ပါတယ်။`,
+                `တစ်နေ့မှာတော့ မထင်မှတ်ထားတဲ့ အခက်အခဲတွေနဲ့ စွန့်စားခန်းများ စတင်ကြုံတွေ့ခဲ့ရပါတယ်။`,
+                `ဒါပေမဲ့ သူတို့အားလုံး စည်းလုံးညီညွတ်စွာနဲ့ အတူတကွ ရဲရဲဝံ့ဝံ့ ရင်ဆိုင်ကျော်ဖြတ်ခဲ့ကြပါတယ်။`,
+                `နောက်ဆုံးမှာတော့ သင်ခန်းစာကောင်းများစွာနဲ့အတူ ပျော်ရွှင်စရာ မင်္ဂလာရှိသော နိဂုံးလေး ဖြစ်သွားခဲ့ပါတယ်။`
             ];
 
-            const myanmarTemplates = [
-                `အခန်း (၁) - ${prompt} ရဲ့ စိတ်လှုပ်ရှားဖွယ် ဇာတ်လမ်းလေး စတင်ပါပြီ။`,
-                `အခန်း (၂) - ထို့နောက် မထင်မှတ်ထားသော စွန့်စားခန်းများနှင့် ရင်ဆိုင်ခဲ့ရပါတယ်။`,
-                `အခန်း (၃) - သူတို့အားလုံး စိန်ခေါ်မှုတွေကို ရဲရဲဝံ့ဝံ့ ကျော်ဖြတ်နိုင်ခဲ့ကြပါတယ်။`,
-                `အခန်း (၄) - နောက်ဆုံးမှာတော့ ပျော်ရွှင်စရာ ကောင်းမွန်တဲ့ နိဂုံးလေးနဲ့ ပြီးဆုံးသွားခဲ့ပါတယ်။`
+            const promptKeywords = [
+                `establishing shot of ${topic}, character introduction, ${style}, masterpiece, 8k`,
+                `adventure scene of ${topic}, facing challenge, dramatic lighting, ${style}, highly detailed`,
+                `action scene of ${topic}, teamwork and courage, colorful magic effects, ${style}`,
+                `happy ending of ${topic}, smiling characters celebrating together, warm lighting, ${style}`
             ];
 
             for(let i = 0; i < sceneCount; i++) {
-                const encodedPrompt = encodeURIComponent(baseEnglishPrompts[i % baseEnglishPrompts.length]);
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=450&seed=${Math.floor(Math.random() * 10000)}&nologo=true`;
+                const encodedImgPrompt = encodeURIComponent(promptKeywords[i % promptKeywords.length]);
+                // High Quality Pollinations Engine
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodedImgPrompt}?width=800&height=450&seed=${Math.floor(Math.random() * 99999)}&nologo=true`;
                 
                 scenes.push({
                     scene_number: i + 1,
-                    myanmar_script: myanmarTemplates[i % myanmarTemplates.length],
+                    myanmar_script: scriptTemplates[i % scriptTemplates.length],
                     image_url: imageUrl
                 });
             }
@@ -181,7 +179,7 @@
                         </div>
                         
                         <div class="relative aspect-video w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-                            <img src="${scene.image_url}" alt="AI Scene Image" class="w-full h-full object-cover" loading="lazy" />
+                            <img src="${scene.image_url}" alt="AI Scene Image" class="w-full h-full object-cover" />
                         </div>
 
                         <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
@@ -202,10 +200,10 @@
 
         function speakMyanmar(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Stop previous speech
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'my-MM';
-                utterance.rate = 0.9;
+                utterance.rate = 0.85;
                 window.speechSynthesis.speak(utterance);
             } else {
                 alert('သင့်ဖုန်း Browser က အသံဖတ်ပေးသည့် စနစ်ကို မထောက်ပံ့ပါခင်ဗျာ။');
