@@ -2,38 +2,70 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Custom AI Chatbot</title>
     <style>
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         
-        /* ဖုန်းမျက်နှာပြင် ကီးဘုတ်ပွင့်ချိန် အဆင်ပြေစေရန် Viewport ထိန်းညှိခြင်း */
-        html, body { 
+        body { 
             margin: 0; 
             padding: 0; 
             background-color: #121212; 
             color: #fff; 
-            height: 100vh; 
-            height: 100dvh; /* Dynamic Viewport for Mobile */
-            overflow: hidden; 
-        }
-
-        .app-container {
             display: flex;
-            width: 100%;
-            height: 100%;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
-        /* Sidebar Styling */
+        /* Top Bar Header */
+        .header { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #333; 
+            background: #181818; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header h2 { margin: 0; color: #00ffcc; font-size: 16px; }
+        .menu-btn {
+            background: #2a2a2a;
+            color: #00ffcc;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Slide-out Sidebar for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 20;
+        }
+        .sidebar-overlay.active { display: block; }
+
         .sidebar { 
-            width: 260px; 
+            position: fixed;
+            top: 0; left: -280px;
+            width: 280px; 
+            height: 100%;
             background-color: #1e1e1e; 
             border-right: 1px solid #333; 
             display: flex; 
             flex-direction: column; 
-            padding: 10px; 
-            flex-shrink: 0;
+            padding: 15px; 
+            z-index: 30;
+            transition: left 0.3s ease;
         }
+        .sidebar.active { left: 0; }
+
         .new-chat-btn { 
             background: #00ffcc; 
             color: #000; 
@@ -42,7 +74,7 @@
             border-radius: 8px; 
             font-weight: bold; 
             cursor: pointer; 
-            margin-bottom: 10px; 
+            margin-bottom: 15px; 
             font-size: 14px; 
         }
         .history-list { 
@@ -50,11 +82,11 @@
             overflow-y: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 6px; 
+            gap: 8px; 
         }
         .history-item { 
-            padding: 10px; 
-            border-radius: 6px; 
+            padding: 12px; 
+            border-radius: 8px; 
             background: #2a2a2a; 
             cursor: pointer; 
             font-size: 13px; 
@@ -69,108 +101,96 @@
             flex: 1;
         }
         .history-item.active { background: #007bff; color: white; }
-        .delete-btn { color: #ff4d4d; border: none; background: none; cursor: pointer; font-size: 14px; padding: 0 5px; }
+        .delete-btn { color: #ff4d4d; border: none; background: none; cursor: pointer; font-size: 16px; padding: 0 5px; }
 
-        /* Main Chat Area - Layout Corrected */
+        /* Main Chat Area */
         .main-chat { 
             flex: 1; 
             display: flex; 
             flex-direction: column; 
-            height: 100%;
-            min-width: 0;
+            justify-content: space-between;
         }
-        .header { 
-            padding: 12px 15px; 
-            border-bottom: 1px solid #333; 
-            background: #181818; 
-            text-align: center; 
-            flex-shrink: 0;
-        }
-        .header h2 { margin: 0; color: #00ffcc; font-size: 16px; }
 
-        /* Chat Box Scrollable Area */
+        /* Chat Messages Container */
         #chat-box { 
             flex: 1; 
-            overflow-y: auto; 
             padding: 15px; 
+            padding-bottom: 20px;
             display: flex; 
             flex-direction: column; 
             gap: 12px; 
-            -webkit-overflow-scrolling: touch;
         }
         
-        /* Messages Styling */
         .message { 
-            padding: 10px 14px; 
+            padding: 12px 16px; 
             border-radius: 12px; 
             max-width: 85%; 
             line-height: 1.5; 
-            font-size: 14px; 
+            font-size: 15px; 
             word-wrap: break-word; 
         }
         .user { background: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .bot { background: #2d2d2d; color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; border-left: 3px solid #00ffcc; }
 
-        /* Fixed Input Area for Mobile Phones */
+        /* Sticky Bottom Input Area */
+        .input-area-wrapper {
+            position: sticky;
+            bottom: 0;
+            background: #181818;
+            border-top: 1px solid #333;
+            padding: 10px;
+        }
         .input-area { 
-            padding: 10px 12px; 
             display: flex; 
             gap: 8px; 
-            background: #181818; 
-            border-top: 1px solid #333; 
-            flex-shrink: 0;
+            max-width: 800px;
+            margin: 0 auto;
         }
         input { 
             flex: 1; 
-            padding: 12px; 
+            padding: 12px 15px; 
             border-radius: 8px; 
             border: 1px solid #444; 
             background: #2a2a2a; 
             color: white; 
-            font-size: 15px; 
+            font-size: 16px; 
             outline: none; 
         }
         button.send-btn { 
-            padding: 12px 18px; 
+            padding: 12px 20px; 
             background: #00ffcc; 
             color: #000; 
             border: none; 
             border-radius: 8px; 
             cursor: pointer; 
             font-weight: bold; 
-            font-size: 14px; 
-            flex-shrink: 0;
-        }
-
-        /* Responsive Mobile adjustments */
-        @media (max-width: 768px) {
-            .app-container { flex-direction: column; }
-            .sidebar { 
-                width: 100%; 
-                max-height: 120px; 
-                border-right: none; 
-                border-bottom: 1px solid #333; 
-            }
+            font-size: 15px; 
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- ဘေးဘက် Sidebar -->
-        <div class="sidebar">
-            <button class="new-chat-btn" onclick="createNewChat()">+ စကားဝိုင်းအသစ် (New Chat)</button>
-            <div class="history-list" id="historyList"></div>
-        </div>
+    <!-- Overlay Background -->
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-        <!-- ပင်မ Chat ဧရိယာ -->
-        <div class="main-chat">
-            <div class="header">
-                <h2>My Custom AI</h2>
-            </div>
+    <!-- Slide-out Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="new-chat-btn" onclick="createNewChat()">+ စကားဝိုင်းအသစ် (New Chat)</button>
+        <div class="history-list" id="historyList"></div>
+    </div>
 
-            <div id="chat-box"></div>
+    <!-- Top Header -->
+    <div class="header">
+        <button class="menu-btn" onclick="toggleSidebar()">☰ စကားဝိုင်းများ</button>
+        <h2>My Custom AI</h2>
+        <div style="width: 50px;"></div>
+    </div>
 
+    <!-- Main Chat Window -->
+    <div class="main-chat">
+        <div id="chat-box"></div>
+
+        <div class="input-area-wrapper">
             <div class="input-area">
                 <input type="text" id="userInput" placeholder="တစ်ခုခု မေးမြန်းပါ..." onkeypress="if(event.key === 'Enter') sendMessage()">
                 <button class="send-btn" onclick="sendMessage()">မေးမည်</button>
@@ -185,8 +205,8 @@
             content: "You are a helpful and polite AI assistant. Always respond in natural, fluent, and polite Burmese (Myanmar language)." 
         };
 
-        let allSessions = JSON.parse(localStorage.getItem("ai_all_sessions")) || {};
-        let currentSessionId = localStorage.getItem("ai_current_session_id") || null;
+        let allSessions = JSON.parse(localStorage.getItem("ai_all_sessions_v2")) || {};
+        let currentSessionId = localStorage.getItem("ai_current_session_id_v2") || null;
 
         window.onload = function() {
             if (!currentSessionId || !allSessions[currentSessionId]) {
@@ -196,6 +216,11 @@
                 loadSession(currentSessionId);
             }
         };
+
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+            document.getElementById("overlay").classList.toggle("active");
+        }
 
         function createNewChat() {
             const sessionId = "chat_" + Date.now();
@@ -207,11 +232,14 @@
             saveState();
             renderHistoryList();
             loadSession(currentSessionId);
+            if (document.getElementById("sidebar").classList.contains("active")) {
+                toggleSidebar();
+            }
         }
 
         function saveState() {
-            localStorage.setItem("ai_all_sessions", JSON.stringify(allSessions));
-            localStorage.setItem("ai_current_session_id", currentSessionId);
+            localStorage.setItem("ai_all_sessions_v2", JSON.stringify(allSessions));
+            localStorage.setItem("ai_current_session_id_v2", currentSessionId);
         }
 
         function renderHistoryList() {
@@ -236,6 +264,7 @@
             saveState();
             renderHistoryList();
             loadSession(id);
+            toggleSidebar();
         }
 
         function loadSession(id) {
@@ -271,9 +300,8 @@
         }
 
         function scrollToBottom() {
-            const chatBox = document.getElementById("chat-box");
             setTimeout(() => {
-                chatBox.scrollTop = chatBox.scrollHeight;
+                window.scrollTo(0, document.body.scrollHeight);
             }, 100);
         }
 
@@ -335,5 +363,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
